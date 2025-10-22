@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import logger from '#config/logger.js';
+import { token } from 'morgan';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-please-change-in-production';
 const JWT_EXPIRES_IN = 'id';
@@ -12,6 +13,13 @@ export const jwttoken = {
             logger.error('Failed to authenticate token', e);
             throw new Error('Failed to authenticate token');
         }
-    }
-    
+    },
+    verify: (token) => {
+        try {
+            return jwt.verify(token, JWT_SECRET);
+        } catch (e) {
+            logger.error('Failed to authenticate token', e);
+            throw new Error('Failed to authenticate token');
+        }
+    } 
 };
