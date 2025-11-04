@@ -1,2 +1,15 @@
 node_modules
+
+# Environment files
 .env
+.env.production
+.env.local
+.env.development
+
+# Logs
+logs
+*.log
+
+# Docker volumes
+docker-volumes/
+.neon_local/
