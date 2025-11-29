@@ -9,14 +9,17 @@ All Docker files have been updated to align with your `package.json` changes and
 ## ✅ Files Updated
 
 ### 1. **Dockerfile** ✓
+
 **Change**: Updated production CMD to use `npm start`
 
 **Before**:
+
 ```dockerfile
 CMD ["node", "src/index.js"]
 ```
 
 **After**:
+
 ```dockerfile
 CMD ["npm", "start"]
 ```
@@ -26,14 +29,17 @@ CMD ["npm", "start"]
 ---
 
 ### 2. **docker-compose.prod.yml** ✓
+
 **Change**: Updated production command to use `npm start`
 
 **Before**:
+
 ```yaml
 command: sh -c "npm run db:migrate && node src/index.js"
 ```
 
 **After**:
+
 ```yaml
 command: sh -c "npm run db:migrate && npm start"
 ```
@@ -43,16 +49,19 @@ command: sh -c "npm run db:migrate && npm start"
 ---
 
 ### 3. **src/config/logger.js** ✓ (BUG FIX)
+
 **Change**: Fixed typo in error log filename
 
 **Before**:
+
 ```javascript
-new winston.transports.File({ filename: 'logs/error.lg', level: 'error' })
+new winston.transports.File({ filename: 'logs/error.lg', level: 'error' });
 ```
 
 **After**:
+
 ```javascript
-new winston.transports.File({ filename: 'logs/error.log', level: 'error' })
+new winston.transports.File({ filename: 'logs/error.log', level: 'error' });
 ```
 
 **Why**: `error.lg` was a typo, should be `error.log`
@@ -60,15 +69,18 @@ new winston.transports.File({ filename: 'logs/error.log', level: 'error' })
 ---
 
 ### 4. **src/app.js** ✓ (BUG FIX)
+
 **Change**: Cleaned up trailing whitespace in imports
 
 **Before**:
+
 ```javascript
-import cookieParser from 'cookie-parser'; 
+import cookieParser from 'cookie-parser';
 //                                       ^ extra space
 ```
 
 **After**:
+
 ```javascript
 import cookieParser from 'cookie-parser';
 ```
@@ -84,8 +96,8 @@ Your `package.json` now has:
 ```json
 {
   "scripts": {
-    "dev": "node --watch src/index.js",      // Development with hot reload
-    "start": "node src/index.js",            // Production/standard start
+    "dev": "node --watch src/index.js", // Development with hot reload
+    "start": "node src/index.js", // Production/standard start
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -102,20 +114,24 @@ Your `package.json` now has:
 ## 🚀 How Docker Uses These Scripts
 
 ### Development Environment
+
 ```yaml
 # docker-compose.dev.yml
 command: sh -c "npm run db:migrate && npm run dev"
 ```
+
 - Runs migrations first
 - Then starts with `npm run dev` (hot reload enabled)
 - Uses Dockerfile `development` target
 - CMD: `["npm", "run", "dev"]`
 
 ### Production Environment
+
 ```yaml
 # docker-compose.prod.yml
 command: sh -c "npm run db:migrate && npm start"
 ```
+
 - Runs migrations first
 - Then starts with `npm start` (no hot reload)
 - Uses Dockerfile `production` target
@@ -126,6 +142,7 @@ command: sh -c "npm run db:migrate && npm start"
 ## 🧪 Test Everything Works
 
 ### Test Development
+
 ```powershell
 # Start dev environment
 .\dev.ps1 start
@@ -137,6 +154,7 @@ command: sh -c "npm run db:migrate && npm start"
 ```
 
 ### Test Production Build (Locally)
+
 ```powershell
 # Build production image
 docker-compose -f docker-compose.prod.yml build
@@ -152,13 +170,13 @@ docker-compose -f docker-compose.prod.yml config
 
 ## 🔍 All Issues Found & Fixed
 
-| Issue | File | Status | Impact |
-|-------|------|--------|--------|
-| Hardcoded `node src/index.js` in Dockerfile | `Dockerfile` | ✅ Fixed | Production wasn't using npm script |
-| Hardcoded `node src/index.js` in compose | `docker-compose.prod.yml` | ✅ Fixed | Same as above |
-| Typo: `error.lg` instead of `error.log` | `src/config/logger.js` | ✅ Fixed | Error logs weren't being created |
-| Trailing whitespace in imports | `src/app.js` | ✅ Fixed | Minor code quality issue |
-| Removed unused import (timestamp) | `src/app.js` | ✅ Already handled | Code was trying to import non-existent function |
+| Issue                                       | File                      | Status             | Impact                                          |
+| ------------------------------------------- | ------------------------- | ------------------ | ----------------------------------------------- |
+| Hardcoded `node src/index.js` in Dockerfile | `Dockerfile`              | ✅ Fixed           | Production wasn't using npm script              |
+| Hardcoded `node src/index.js` in compose    | `docker-compose.prod.yml` | ✅ Fixed           | Same as above                                   |
+| Typo: `error.lg` instead of `error.log`     | `src/config/logger.js`    | ✅ Fixed           | Error logs weren't being created                |
+| Trailing whitespace in imports              | `src/app.js`              | ✅ Fixed           | Minor code quality issue                        |
+| Removed unused import (timestamp)           | `src/app.js`              | ✅ Already handled | Code was trying to import non-existent function |
 
 ---
 
@@ -220,19 +238,21 @@ curl http://localhost:3000/health
 ## 🎯 What Changed vs Original Setup
 
 ### Scripts Alignment
-| Component | Before | After | Reason |
-|-----------|--------|-------|--------|
-| Dockerfile (prod) | `node src/index.js` | `npm start` | Use package.json script |
-| docker-compose (prod) | `node src/index.js` | `npm start` | Consistency |
-| Dockerfile (dev) | `npm run dev` | `npm run dev` | No change (already correct) |
-| docker-compose (dev) | `npm run dev` | `npm run dev` | No change (already correct) |
+
+| Component             | Before              | After         | Reason                      |
+| --------------------- | ------------------- | ------------- | --------------------------- |
+| Dockerfile (prod)     | `node src/index.js` | `npm start`   | Use package.json script     |
+| docker-compose (prod) | `node src/index.js` | `npm start`   | Consistency                 |
+| Dockerfile (dev)      | `npm run dev`       | `npm run dev` | No change (already correct) |
+| docker-compose (dev)  | `npm run dev`       | `npm run dev` | No change (already correct) |
 
 ### Bug Fixes
-| File | Issue | Fix |
-|------|-------|-----|
+
+| File        | Issue           | Fix         |
+| ----------- | --------------- | ----------- |
 | `logger.js` | `error.lg` typo | `error.log` |
-| `app.js` | Unused import | Removed |
-| `app.js` | Trailing space | Cleaned |
+| `app.js`    | Unused import   | Removed     |
+| `app.js`    | Trailing space  | Cleaned     |
 
 ---
 
@@ -254,12 +274,12 @@ docker-compose -f docker-compose.prod.yml up -d  # Starts with npm start
 
 ## 📊 Performance Impact
 
-| Change | Impact | Notes |
-|--------|--------|-------|
-| Using `npm start` | None | Just a wrapper around `node src/index.js` |
-| Using `npm run dev` | None | Already was using it |
-| Fixed logger typo | **Positive** | Error logs will now be created correctly |
-| Removed unused import | Minor | Slightly cleaner code |
+| Change                | Impact       | Notes                                     |
+| --------------------- | ------------ | ----------------------------------------- |
+| Using `npm start`     | None         | Just a wrapper around `node src/index.js` |
+| Using `npm run dev`   | None         | Already was using it                      |
+| Fixed logger typo     | **Positive** | Error logs will now be created correctly  |
+| Removed unused import | Minor        | Slightly cleaner code                     |
 
 ---
 
@@ -276,12 +296,15 @@ docker-compose -f docker-compose.prod.yml up -d  # Starts with npm start
 ## 💡 Recommendations Going Forward
 
 ### 1. Always Use npm Scripts in Docker
+
 ✅ **Good** (Now doing this):
+
 ```dockerfile
 CMD ["npm", "start"]
 ```
 
 ❌ **Avoid**:
+
 ```dockerfile
 CMD ["node", "src/index.js"]
 ```
@@ -290,15 +313,16 @@ CMD ["node", "src/index.js"]
 
 ### 2. Keep Scripts Consistent
 
-| Environment | Script | Purpose |
-|-------------|--------|---------|
+| Environment | Script        | Purpose                   |
+| ----------- | ------------- | ------------------------- |
 | Development | `npm run dev` | Hot reload with `--watch` |
-| Production | `npm start` | Standard Node.js start |
-| Testing | `npm test` | Run tests (add this!) |
+| Production  | `npm start`   | Standard Node.js start    |
+| Testing     | `npm test`    | Run tests (add this!)     |
 
 ### 3. Add More Scripts (Future)
 
 Consider adding to `package.json`:
+
 ```json
 {
   "scripts": {
@@ -315,6 +339,7 @@ Consider adding to `package.json`:
 ## 🎉 Summary
 
 All Docker files are now:
+
 - ✅ Aligned with your package.json changes
 - ✅ Using correct npm scripts
 - ✅ Bug-free (logger typo fixed)

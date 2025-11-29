@@ -2,9 +2,9 @@ name: Docker CI/CD
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 env:
   REGISTRY: ghcr.io
@@ -15,7 +15,7 @@ jobs:
   test:
     name: Test Application
     runs-on: ubuntu-latest
-    
+
     services:
       # Use Neon Local for testing
       postgres:
@@ -72,7 +72,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -124,7 +124,7 @@ jobs:
     environment:
       name: staging
       url: https://staging-api.example.com
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -152,7 +152,7 @@ jobs:
     environment:
       name: production
       url: https://api.example.com
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -173,14 +173,14 @@ jobs:
             --force-new-deployment
 
       # Or deploy to other platforms:
-      
+
       # Google Cloud Run
       # - name: Deploy to Cloud Run
       #   uses: google-github-actions/deploy-cloudrun@v2
       #   with:
       #     service: acquisitions-api
       #     image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-      
+
       # Fly.io
       # - name: Deploy to Fly.io
       #   uses: superfly/flyctl-actions/setup-flyctl@master
@@ -195,7 +195,7 @@ jobs:
     needs: build
     permissions:
       security-events: write
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

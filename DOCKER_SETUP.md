@@ -20,6 +20,7 @@ This guide explains how to run the Acquisitions API using Docker with different 
 - **Neon Account**: For production deployment ([Sign up](https://neon.tech))
 
 Verify installation:
+
 ```bash
 docker --version
 docker-compose --version
@@ -30,6 +31,7 @@ docker-compose --version
 ## Architecture Overview
 
 ### Development Environment
+
 ```
 ┌─────────────────────────────────────────────┐
 │  Developer Machine                          │
@@ -45,6 +47,7 @@ docker-compose --version
 ```
 
 ### Production Environment
+
 ```
 ┌─────────────────────┐         ┌──────────────────────┐
 │   App Container     │────────│  Neon Cloud DB       │
@@ -60,6 +63,7 @@ docker-compose --version
 ### What is Neon Local?
 
 **Neon Local** is a Docker-based PostgreSQL instance that mimics Neon's cloud environment locally. It allows you to:
+
 - Develop with the same database engine as production
 - Test database branching features
 - Work offline without cloud dependencies
@@ -115,28 +119,31 @@ docker-compose -f docker-compose.dev.yml up app
 ### Step 3: Verify Setup
 
 1. **Check running containers**:
+
    ```bash
    docker ps
    ```
-   
+
    You should see:
    - `acquisitions-app-dev` (port 3000)
    - `acquisitions-neon-local` (port 5432)
 
 2. **Test API endpoints**:
+
    ```bash
    # Health check
    curl http://localhost:3000/health
-   
+
    # API root
    curl http://localhost:3000/api
    ```
 
 3. **Check logs**:
+
    ```bash
    # App logs
    docker-compose -f docker-compose.dev.yml logs -f app
-   
+
    # Database logs
    docker-compose -f docker-compose.dev.yml logs -f neon-local
    ```
@@ -218,6 +225,7 @@ docker-compose -f docker-compose.dev.yml down -v
 ### What is Neon Cloud?
 
 **Neon Cloud** is a serverless PostgreSQL platform with:
+
 - Auto-scaling and instant scaling to zero
 - Database branching for instant dev/staging environments
 - Built-in connection pooling
@@ -265,11 +273,13 @@ JWT_SECRET=<output-of-openssl-rand-base64-32>
 ```
 
 **Generate JWT Secret**:
+
 ```bash
 openssl rand -base64 32
 ```
 
 **⚠️ SECURITY WARNING**:
+
 - **NEVER** commit `.env.production` to Git
 - Add to `.gitignore`: `echo ".env.production" >> .gitignore`
 - Use secret management tools in production (AWS Secrets Manager, Vault, etc.)
@@ -287,6 +297,7 @@ docker-compose -f docker-compose.prod.yml build
 ```
 
 **Image optimizations**:
+
 - Multi-stage build (smaller image)
 - Production dependencies only
 - Non-root user for security
@@ -312,6 +323,7 @@ docker-compose -f docker-compose.prod.yml logs -f
 #### Option B: Cloud Platform Deployment
 
 **AWS ECS / Fargate**:
+
 ```bash
 # Push to ECR
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <account>.dkr.ecr.us-east-1.amazonaws.com
@@ -320,6 +332,7 @@ docker push <account>.dkr.ecr.us-east-1.amazonaws.com/acquisitions-api:latest
 ```
 
 **Google Cloud Run**:
+
 ```bash
 # Build and push
 gcloud builds submit --tag gcr.io/PROJECT_ID/acquisitions-api
@@ -327,6 +340,7 @@ gcloud run deploy acquisitions-api --image gcr.io/PROJECT_ID/acquisitions-api --
 ```
 
 **Fly.io** (uses Dockerfile automatically):
+
 ```bash
 fly launch
 fly deploy
@@ -346,6 +360,7 @@ DATABASE_URL="postgresql://..." JWT_SECRET="..." docker-compose -f docker-compos
 #### Cloud Platforms
 
 **AWS ECS**:
+
 - Store secrets in **AWS Secrets Manager**
 - Reference in task definition:
   ```json
@@ -358,6 +373,7 @@ DATABASE_URL="postgresql://..." JWT_SECRET="..." docker-compose -f docker-compos
   ```
 
 **Kubernetes**:
+
 ```yaml
 apiVersion: v1
 kind: Secret
@@ -411,6 +427,7 @@ docker-compose -f docker-compose.prod.yml exec app node -e "require('@neondataba
 ```
 
 **Best Practice**: Use Neon's **database branching** for testing migrations:
+
 1. Create branch in Neon Console
 2. Update `DATABASE_URL` to branch URL
 3. Test migration
@@ -423,6 +440,7 @@ docker-compose -f docker-compose.prod.yml exec app node -e "require('@neondataba
 ### Issue: "Cannot connect to database"
 
 **Solution**:
+
 ```bash
 # Check if Neon Local is running
 docker-compose -f docker-compose.dev.yml ps neon-local
@@ -439,6 +457,7 @@ docker-compose -f docker-compose.dev.yml restart neon-local
 ### Issue: "Port 3000 already in use"
 
 **Solution**:
+
 ```bash
 # Find process using port
 # Windows PowerShell:
@@ -457,6 +476,7 @@ ports:
 ### Issue: "Hot reload not working"
 
 **Solution**:
+
 ```bash
 # Ensure volume mount is correct
 docker-compose -f docker-compose.dev.yml exec app ls -la /app/src
@@ -471,6 +491,7 @@ docker-compose -f docker-compose.dev.yml up --build
 ### Issue: "Migration fails in production"
 
 **Solution**:
+
 ```bash
 # Check Neon connection
 docker-compose -f docker-compose.prod.yml exec app node -e "console.log(process.env.DATABASE_URL)"
@@ -487,6 +508,7 @@ docker-compose -f docker-compose.prod.yml exec app ls -la /app/drizzle
 ### Issue: "Logs not persisting"
 
 **Solution**:
+
 ```bash
 # Ensure logs directory exists and is writable
 mkdir -p logs
@@ -527,16 +549,16 @@ docker system prune -a                                   # Remove unused images
 
 ## Environment Comparison
 
-| Feature | Development (Neon Local) | Production (Neon Cloud) |
-|---------|-------------------------|-------------------------|
-| **Database** | Local PostgreSQL in Docker | Neon serverless PostgreSQL |
-| **Connection** | `neon-local:5432` | `*.neon.tech:5432` (TLS) |
-| **Hot Reload** | ✅ Enabled | ❌ Disabled |
-| **Logging** | Debug level, console + files | Info level, files only |
-| **Volumes** | Source code mounted | Only logs mounted |
-| **Secrets** | Hardcoded (safe for dev) | Environment variables |
-| **Scaling** | Manual | Auto-scaling |
-| **Backups** | Manual Docker volumes | Automatic by Neon |
+| Feature        | Development (Neon Local)     | Production (Neon Cloud)    |
+| -------------- | ---------------------------- | -------------------------- |
+| **Database**   | Local PostgreSQL in Docker   | Neon serverless PostgreSQL |
+| **Connection** | `neon-local:5432`            | `*.neon.tech:5432` (TLS)   |
+| **Hot Reload** | ✅ Enabled                   | ❌ Disabled                |
+| **Logging**    | Debug level, console + files | Info level, files only     |
+| **Volumes**    | Source code mounted          | Only logs mounted          |
+| **Secrets**    | Hardcoded (safe for dev)     | Environment variables      |
+| **Scaling**    | Manual                       | Auto-scaling               |
+| **Backups**    | Manual Docker volumes        | Automatic by Neon          |
 
 ---
 
@@ -566,6 +588,7 @@ docker system prune -a                                   # Remove unused images
 ## Support
 
 For issues specific to:
+
 - **Application**: Open an issue in this repository
 - **Neon Database**: [Neon Support](https://neon.tech/docs/introduction/support)
 - **Docker**: [Docker Community Forum](https://forums.docker.com/)

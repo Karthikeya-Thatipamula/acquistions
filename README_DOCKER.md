@@ -3,6 +3,7 @@
 ## TL;DR - Get Started in 30 Seconds
 
 ### Development (Windows PowerShell)
+
 ```powershell
 # Start everything
 .\dev.ps1 start
@@ -15,6 +16,7 @@
 ```
 
 ### Development (Linux/Mac)
+
 ```bash
 # Make script executable
 chmod +x dev.sh
@@ -36,6 +38,7 @@ Your API will be running at: **http://localhost:3000**
 ## What You Get
 
 ### Development Environment
+
 - ✅ **Neon Local PostgreSQL** running in Docker (no cloud needed)
 - ✅ **Hot reload** - changes to `src/` auto-restart the app
 - ✅ **Database migrations** run automatically on startup
@@ -43,6 +46,7 @@ Your API will be running at: **http://localhost:3000**
 - ✅ **Isolated** - won't conflict with other local projects
 
 ### Production Environment
+
 - ✅ **Connects to Neon Cloud** (serverless PostgreSQL)
 - ✅ **Optimized Docker image** (multi-stage build, ~150MB)
 - ✅ **Health checks** built-in
@@ -54,16 +58,19 @@ Your API will be running at: **http://localhost:3000**
 ## First Time Setup
 
 ### 1. Install Docker
+
 - **Windows/Mac**: [Docker Desktop](https://www.docker.com/products/docker-desktop)
 - **Linux**: [Docker Engine](https://docs.docker.com/engine/install/)
 
 Verify:
+
 ```bash
 docker --version
 docker-compose --version
 ```
 
 ### 2. Start Development Environment
+
 ```powershell
 # Windows
 .\dev.ps1 start
@@ -73,6 +80,7 @@ docker-compose --version
 ```
 
 ### 3. Test Your API
+
 ```bash
 # Health check
 curl http://localhost:3000/health
@@ -89,29 +97,29 @@ curl -X POST http://localhost:3000/api/auth/sign-up \
 
 ### Windows PowerShell
 
-| Command | Description |
-|---------|-------------|
-| `.\dev.ps1 start` | Start all services |
-| `.\dev.ps1 stop` | Stop all services |
-| `.\dev.ps1 restart` | Restart services |
-| `.\dev.ps1 logs` | View live logs |
-| `.\dev.ps1 migrate` | Run database migrations |
-| `.\dev.ps1 studio` | Open Drizzle Studio |
-| `.\dev.ps1 db` | Connect to PostgreSQL shell |
-| `.\dev.ps1 clean` | Remove all containers & data |
+| Command             | Description                  |
+| ------------------- | ---------------------------- |
+| `.\dev.ps1 start`   | Start all services           |
+| `.\dev.ps1 stop`    | Stop all services            |
+| `.\dev.ps1 restart` | Restart services             |
+| `.\dev.ps1 logs`    | View live logs               |
+| `.\dev.ps1 migrate` | Run database migrations      |
+| `.\dev.ps1 studio`  | Open Drizzle Studio          |
+| `.\dev.ps1 db`      | Connect to PostgreSQL shell  |
+| `.\dev.ps1 clean`   | Remove all containers & data |
 
 ### Linux/Mac Bash
 
-| Command | Description |
-|---------|-------------|
-| `./dev.sh start` | Start all services |
-| `./dev.sh stop` | Stop all services |
-| `./dev.sh restart` | Restart services |
-| `./dev.sh logs` | View live logs |
-| `./dev.sh migrate` | Run database migrations |
-| `./dev.sh studio` | Open Drizzle Studio |
-| `./dev.sh db` | Connect to PostgreSQL shell |
-| `./dev.sh clean` | Remove all containers & data |
+| Command            | Description                  |
+| ------------------ | ---------------------------- |
+| `./dev.sh start`   | Start all services           |
+| `./dev.sh stop`    | Stop all services            |
+| `./dev.sh restart` | Restart services             |
+| `./dev.sh logs`    | View live logs               |
+| `./dev.sh migrate` | Run database migrations      |
+| `./dev.sh studio`  | Open Drizzle Studio          |
+| `./dev.sh db`      | Connect to PostgreSQL shell  |
+| `./dev.sh clean`   | Remove all containers & data |
 
 ---
 
@@ -126,6 +134,7 @@ curl -X POST http://localhost:3000/api/auth/sign-up \
 ### Step 2: Configure Production Environment
 
 Edit `.env.production`:
+
 ```bash
 DATABASE_URL=postgresql://user:pass@ep-xxx-xxx.us-east-2.aws.neon.tech/dbname?sslmode=require
 JWT_SECRET=$(openssl rand -base64 32)
@@ -149,6 +158,7 @@ docker-compose -f docker-compose.prod.yml down
 ## Troubleshooting
 
 ### "Port 3000 already in use"
+
 ```powershell
 # Windows - Find and kill process
 Get-Process -Id (Get-NetTCPConnection -LocalPort 3000).OwningProcess | Stop-Process
@@ -159,6 +169,7 @@ ports:
 ```
 
 ### "Database connection refused"
+
 ```bash
 # Check if database is healthy
 docker ps
@@ -171,6 +182,7 @@ docker-compose -f docker-compose.dev.yml logs neon-local
 ```
 
 ### "Hot reload not working"
+
 ```bash
 # Rebuild containers
 docker-compose -f docker-compose.dev.yml down
@@ -178,6 +190,7 @@ docker-compose -f docker-compose.dev.yml up --build
 ```
 
 ### "Migration failed"
+
 ```bash
 # Run manually
 docker-compose -f docker-compose.dev.yml exec app npm run db:migrate
@@ -217,6 +230,7 @@ docker-compose -f docker-compose.dev.yml build --no-cache
 ## Database Access
 
 ### Access PostgreSQL Shell
+
 ```bash
 # Via convenience script
 .\dev.ps1 db  # Windows
@@ -227,6 +241,7 @@ docker-compose -f docker-compose.dev.yml exec neon-local psql -U neondb_owner -d
 ```
 
 ### Common SQL Commands
+
 ```sql
 -- List tables
 \dt
@@ -245,6 +260,7 @@ SELECT COUNT(*) FROM users;
 ```
 
 ### Drizzle Studio (Visual Database Browser)
+
 ```bash
 # Start Drizzle Studio
 .\dev.ps1 studio  # Windows
@@ -259,6 +275,7 @@ SELECT COUNT(*) FROM users;
 ## Environment Variables
 
 ### Development (`.env.development`)
+
 ```bash
 PORT=3000
 NODE_ENV=development
@@ -268,6 +285,7 @@ JWT_SECRET=dev-jwt-secret-change-me-in-production
 ```
 
 ### Production (`.env.production`)
+
 ```bash
 PORT=3000
 NODE_ENV=production
@@ -300,11 +318,13 @@ JWT_SECRET=<generate-with-openssl-rand-base64-32>
 ## Performance Notes
 
 ### Development
+
 - **First build**: ~2-3 minutes (downloads Node.js image + npm install)
 - **Subsequent builds**: ~10-30 seconds (uses Docker cache)
 - **Hot reload**: Instant (watches `src/` directory)
 
 ### Production
+
 - **Image size**: ~150MB (Alpine Linux + Node.js + app)
 - **Build time**: ~1-2 minutes
 - **Startup time**: ~3-5 seconds
@@ -315,6 +335,7 @@ JWT_SECRET=<generate-with-openssl-rand-base64-32>
 ## Cloud Deployment Examples
 
 ### AWS ECS (Fargate)
+
 ```bash
 # Build and push to ECR
 aws ecr get-login-password | docker login --username AWS --password-stdin $ECR_REGISTRY
@@ -327,6 +348,7 @@ aws ecs update-service --cluster prod --service acquisitions-api --force-new-dep
 ```
 
 ### Google Cloud Run
+
 ```bash
 # Build and deploy
 gcloud builds submit --tag gcr.io/$PROJECT_ID/acquisitions-api
@@ -338,6 +360,7 @@ gcloud run deploy acquisitions-api \
 ```
 
 ### Fly.io
+
 ```bash
 # Initialize and deploy (uses Dockerfile automatically)
 fly launch

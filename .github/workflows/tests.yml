@@ -2,9 +2,9 @@ name: Tests
 
 on:
   push:
-    branches: [ main, staging ]
+    branches: [main, staging]
   pull_request:
-    branches: [ main, staging ]
+    branches: [main, staging]
 
 jobs:
   test:
@@ -56,4 +56,4 @@ jobs:
       - name: Annotate test failures
         if: ${{ fromJSON(steps.run_tests.outputs.exit_code) != 0 }}
         run: |
-          echo "::error title=Test Failures::Some tests failed. Run 'npm test' locally to reproduce and inspect logs." 
+          echo "::error title=Test Failures::Some tests failed. Run 'npm test' locally to reproduce and inspect logs."

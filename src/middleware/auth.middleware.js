@@ -12,7 +12,8 @@ export const authenticateToken = (req, res, next) => {
     let headerToken = undefined;
     if (req.headers.authorization) {
       const parts = req.headers.authorization.split(' ');
-      if (parts.length === 2 && /^Bearer$/i.test(parts[0])) headerToken = parts[1];
+      if (parts.length === 2 && /^Bearer$/i.test(parts[0]))
+        headerToken = parts[1];
     }
 
     // Try to parse token from raw Cookie header if cookieParser didn't run or name differs
@@ -20,14 +21,22 @@ export const authenticateToken = (req, res, next) => {
     const rawCookieHeader = req.headers?.cookie;
     if (!cookieToken && rawCookieHeader) {
       // simple parse: look for auth_token= or token=
-      const match = rawCookieHeader.match(/(?:^|;\s*)(?:auth_token|token)=([^;]+)/i);
+      const match = rawCookieHeader.match(
+        /(?:^|;\s*)(?:auth_token|token)=([^;]+)/i
+      );
       if (match) rawCookieToken = decodeURIComponent(match[1]);
     }
 
     const token = cookieToken || headerToken || rawCookieToken;
 
     // In development, log which source provided the token (don't log full token)
-    const source = cookieToken ? 'cookie' : headerToken ? 'authorization_header' : rawCookieToken ? 'raw_cookie_header' : 'none';
+    const source = cookieToken
+      ? 'cookie'
+      : headerToken
+        ? 'authorization_header'
+        : rawCookieToken
+          ? 'raw_cookie_header'
+          : 'none';
     if (process.env.NODE_ENV !== 'production') {
       const tokenPreview = token ? `${String(token).slice(0, 8)}...` : null;
       logger.info('Auth token lookup', {
