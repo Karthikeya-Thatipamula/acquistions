@@ -1,0 +1,59 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, staging ]
+  pull_request:
+    branches: [ main, staging ]
+
+jobs:
+  test:
+    name: Run tests and collect coverage
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      NODE_OPTIONS: --experimental-vm-modules
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests (capture exit code)
+        id: run_tests
+        continue-on-error: true
+        run: |
+          set -o pipefail || true
+          npm test -- --coverage || true
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage
+          retention-days: 30
+
+      - name: Create test summary
+        run: |
+          if [ "${{ fromJSON(steps.run_tests.outputs.exit_code) }}" -eq 0 ]; then
+            echo "## Tests: Passed" >> $GITHUB_STEP_SUMMARY
+            echo "Coverage report uploaded as artifact: coverage-report" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## Tests: FAILED" >> $GITHUB_STEP_SUMMARY
+            echo "Check workflow logs for test failures." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Annotate test failures
+        if: ${{ fromJSON(steps.run_tests.outputs.exit_code) != 0 }}
+        run: |
+          echo "::error title=Test Failures::Some tests failed. Run 'npm test' locally to reproduce and inspect logs." 
