@@ -17,9 +17,12 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      # Use Neon Local for testing
+      # Use official Postgres image for CI tests. Neon Local is not published
+      # to Docker Hub under the `neondatabase/neon-local:latest` tag, which
+      # causes `manifest unknown` errors in GitHub Actions. The official
+      # Postgres image is a reliable replacement for CI purposes.
       postgres:
-        image: neondatabase/neon-local:latest
+        image: postgres:15
         env:
           POSTGRES_USER: neondb_owner
           POSTGRES_PASSWORD: testpassword
