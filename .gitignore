@@ -10,6 +10,18 @@ node_modules
 logs
 *.log
 
+# Test coverage
+coverage
+.nyc_output
+
 # Docker volumes
 docker-volumes/
 .neon_local/
+
+# IDE & OS
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
