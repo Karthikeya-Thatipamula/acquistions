@@ -4,6 +4,21 @@ import { slidingWindow } from '@arcjet/node';
 
 const securityMiddleware = async (req, res, next) => {
   try {
+    // Skip bot detection for development tools in development mode
+    const isDevelopment = process.env.NODE_ENV !== 'production';
+    const userAgent = req.get('User-Agent') || '';
+    const isDevTool = /postman|insomnia|curl|thunder client|rest client/i.test(userAgent);
+
+    // Skip security checks for development tools during development
+    if (isDevelopment && isDevTool) {
+      logger.info('Skipping security checks for development tool', {
+        ip: req.ip,
+        userAgent,
+        path: req.path,
+      });
+      return next();
+    }
+
     const role = req.user?.role || 'guest';
 
     let limit;
